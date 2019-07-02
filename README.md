@@ -27,7 +27,7 @@ cd api
 ### Servidor web da aplicação
 
 ```
-cd cdc-admin
+cd instalura
 npm start
 ```
 * Acesso web: http://localhost:3000
