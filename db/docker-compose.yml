@@ -1,0 +1,24 @@
+version: '2'
+services:
+    instalura-mysql:
+        image: mysql:5.7.26
+        restart: always
+        container_name: instalura-mysql
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+        volumes:
+            - ./mysql:/var/lib/mysql
+        ports:
+            - 3306:3306
+    payfast-phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        container_name: instalura-phpmyadmin
+        ports:
+            - "8085:80"
+        environment:
+            - PMA_HOST=instalura-mysql
+        links:
+            - instalura-mysql
+        depends_on:
+          - instalura-mysql

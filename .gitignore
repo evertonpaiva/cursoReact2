@@ -1,0 +1,9 @@
+# IDE's
+.idea
+
+# App
+instalura/node_modules
+
+# DB
+!db/mysql/.gitkeep
+db/mysql/*
