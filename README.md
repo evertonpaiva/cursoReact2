@@ -21,8 +21,9 @@ Para iniciar a API localmente
 cd api
 ./inicia-api.sh
 ```
-
+* Para gerar os dados iniciais de teste para a API acesse: http://localhost:8080/gera/dados
 * Acesso web à API: http://localhost:8080/
+* Endereço da API em servidor externo: https://instalura-api.herokuapp.com/api/public/fotos/rafael
 
 ### Servidor web da aplicação
 
