@@ -3,6 +3,7 @@
 
 # App
 instalura/node_modules
+instalura/package-lock.json
 
 # DB
 !db/mysql/.gitkeep

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import FotoItem from './Foto';
 
 export default class Timeline extends Component {
