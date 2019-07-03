@@ -3,20 +3,24 @@ import FotoItem from './Foto';
 
 export default class Timeline extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {fotos: []};
+    this.login = this.props.login;
   }
 
   componentDidMount() {
+    this.carregaFotos(this.props);
+  }
 
+  carregaFotos(){
     let urlPerfil;
 
-    if(this.props.login === undefined) {
+    if(this.login === undefined) {
       const token = localStorage.getItem('auth-token');
       urlPerfil = `https://instalura-api.herokuapp.com/api/fotos?X-AUTH-TOKEN=${token}`;
     } else {
-      urlPerfil = `https://instalura-api.herokuapp.com/api/public/fotos/${this.props.login}`;
+      urlPerfil = `https://instalura-api.herokuapp.com/api/public/fotos/${this.login}`;
     }
 
     fetch(urlPerfil)
@@ -28,6 +32,13 @@ export default class Timeline extends Component {
         });
       })
       .catch(erro => console.log(erro));
+  }
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    if(nextProps.login !== undefined){
+      this.login = nextProps.login;
+      this.carregaFotos();
+    }
   }
 
   render() {
