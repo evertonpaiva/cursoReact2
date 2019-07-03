@@ -27,7 +27,10 @@ class FotoInfo extends Component {
 
   constructor(props){
     super(props);
-    this.state = { likers: this.props.foto.likers};
+    this.state = {
+      likers: this.props.foto.likers,
+      comentarios: this.props.foto.comentarios
+    };
   }
 
   componentWillMount(){
@@ -42,7 +45,14 @@ class FotoInfo extends Component {
           this.setState({likers:novosLikers});
         }
       }
-    })
+    });
+
+    Pubsub.subscribe('novos-comentarios', (topico, infoComentario) => {
+      if(this.props.foto.id === infoComentario.fotoId){
+        const novosComentarios = this.state.comentarios.concat(infoComentario.novoComentario);
+        this.setState({comentarios:novosComentarios});
+      }
+    });
   }
 
   render() {
@@ -67,7 +77,7 @@ class FotoInfo extends Component {
 
         <ul className="foto-info-comentarios">
           {
-            this.props.foto.comentarios.map(comentario => {
+            this.state.comentarios.map(comentario => {
               return(
                 <li className="comentario" key={comentario.id}>
                   <Link to={`/timeline/${comentario.login}`} className="foto-info-autor">{comentario.login} </Link>
@@ -118,12 +128,46 @@ class FotoAtualizacoes extends Component {
       });
   }
 
+  comenta(event){
+    event.preventDefault();
+
+    const token = localStorage.getItem('auth-token');
+
+    const requestInfo = {
+      method: 'POST',
+      body:JSON.stringify({texto:this.comentario.value}),
+      headers: new Headers({
+        'Content-type': 'application/json'
+      })
+    };
+
+    fetch(
+      //`http://localhost:8080/api/fotos/${this.props.foto.id}/comment?X-AUTH-TOKEN=${token}`,
+      `https://instalura-api.herokuapp.com/api/fotos/${this.props.foto.id}/comment?X-AUTH-TOKEN=${token}`,
+      requestInfo)
+      .then(response => {
+        if(response.ok){
+          return response.json();
+        } else {
+          throw new Error('Não foi possível comentar');
+        }
+      })
+      .then(novoComentario => {
+        Pubsub.publish('novos-comentarios',
+          {
+            fotoId: this.props.foto.id,
+            novoComentario
+          }
+        );
+      })
+  }
+
   render() {
     return (
       <section className="fotoAtualizacoes">
         <a onClick={this.like.bind(this)} className={this.state.likeada ? 'fotoAtualizacoes-like-ativo' : 'fotoAtualizacoes-like'}>Likar</a>
-        <form className="fotoAtualizacoes-form">
-          <input type="text" placeholder="Adicione um comentário..." className="fotoAtualizacoes-form-campo"/>
+        <form className="fotoAtualizacoes-form" onSubmit={this.comenta.bind(this)}>
+          <input type="text" placeholder="Adicione um comentário..." className="fotoAtualizacoes-form-campo" ref={input => this.comentario = input}/>
           <input type="submit" value="Comentar!" className="fotoAtualizacoes-form-submit"/>
         </form>
 
