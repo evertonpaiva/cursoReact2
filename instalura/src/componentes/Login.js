@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { browserHistory } from 'react-router';
 
 export default class Login extends Component {
 
@@ -22,6 +23,7 @@ export default class Login extends Component {
     };
 
     fetch('https://instalura-api.herokuapp.com/api/public/login', requestInfo)
+    //fetch('http://localhost:8080/api/public/login', requestInfo)
       .then(response => {
         if(response.ok){
           return response.text();
@@ -30,7 +32,8 @@ export default class Login extends Component {
         }
       })
       .then(token => {
-        console.log(token);
+        localStorage.setItem('auth-token', token);
+        browserHistory.push('/timeline');
       })
       .catch(error => {
         this.setState({msg: error.message});
