@@ -49,6 +49,63 @@ export default class Timeline extends Component {
     }
   }
 
+  like(fotoId){
+    const token = localStorage.getItem('auth-token');
+    fetch(
+      //`http://localhost:8080/api/fotos/${fotoId}/like?X-AUTH-TOKEN=${token}`,
+      `https://instalura-api.herokuapp.com/api/fotos/${fotoId}/like?X-AUTH-TOKEN=${token}`,
+      {method: 'POST'}
+    )
+      .then(response => {
+        if(response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Não foi possível curtir a foto');
+        }
+      })
+      .then(liker => {
+        Pubsub.publish(
+          'atualiza-liker',
+          {
+            fotoId,
+            liker
+          }
+        );
+      });
+  }
+
+  comenta(fotoId, textoComentario){
+    const token = localStorage.getItem('auth-token');
+
+    const requestInfo = {
+      method: 'POST',
+      body:JSON.stringify({texto:textoComentario}),
+      headers: new Headers({
+        'Content-type': 'application/json'
+      })
+    };
+
+    fetch(
+      //`http://localhost:8080/api/fotos/${fotoId}/comment?X-AUTH-TOKEN=${token}`,
+      `https://instalura-api.herokuapp.com/api/fotos/${fotoId}/comment?X-AUTH-TOKEN=${token}`,
+      requestInfo)
+      .then(response => {
+        if(response.ok){
+          return response.json();
+        } else {
+          throw new Error('Não foi possível comentar');
+        }
+      })
+      .then(novoComentario => {
+        Pubsub.publish('novos-comentarios',
+          {
+            fotoId,
+            novoComentario
+          }
+        );
+      })
+  }
+
   render() {
     return (
       <div className="fotos container">
@@ -57,7 +114,7 @@ export default class Timeline extends Component {
           transitionEnterTimeout={500}
           transitionLeaveTimeout={300}>
         {
-          this.state.fotos.map(foto => <FotoItem key={foto.id} foto={foto}/>)
+          this.state.fotos.map(foto => <FotoItem key={foto.id} foto={foto} like={this.like} comenta={this.comenta}/>)
         }
         </ReactCSSTransitionGroup>
       </div>
