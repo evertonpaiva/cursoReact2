@@ -136,7 +136,7 @@ export default class FotoItem extends Component {
              src={this.props.foto.urlFoto}/>
 
         <FotoInfo foto={this.props.foto}/>
-        <FotoAtualizacoes foto={this.props.foto} like={this.props.like} comenta={this.props.comenta}/>
+        <FotoAtualizacoes {...this.props}/>
       </div>
     );
   }
